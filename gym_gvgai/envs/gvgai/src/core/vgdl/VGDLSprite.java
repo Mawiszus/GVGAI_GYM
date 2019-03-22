@@ -673,12 +673,11 @@ public abstract class VGDLSprite {
     }
 
     /**
-     * Draws this sprite (both the not oriented and, if appropriate, the oriented part)
-     * @param gphx graphics object to draw in.
-     * @param game reference to the game that is being played now.
+     * Determine whether we are shown (unless disabled)
+     * @param game Game object
+     * @return Whether to show something
      */
-    public void draw(Graphics2D gphx, Game game) {
-
+    private boolean isShown(Game game) {
         String[] invis = invisible.split(",");
 
         boolean show;
@@ -703,6 +702,35 @@ public abstract class VGDLSprite {
                 show = displayP1 || displayP2;
         } else
             show = !invis0;
+
+        return show;
+    }
+
+    /**
+     * Draw a segmentation rectangle for this sprite on the given graphics object.
+     * The graphic's color is used
+     * @param gphx Graphics
+     * @param game Game object
+     */
+    public void drawSegmentation(Graphics2D gphx, Game game) {
+        boolean show = this.isShown(game);
+
+        if (show && !disabled) {
+            Rectangle r = new Rectangle(rect);
+
+            this.modifyToDrawRectangle(game, r);
+
+            gphx.fillRect(r.x, r.y, r.width, r.height);
+        }
+    }
+
+    /**
+     * Draws this sprite (both the not oriented and, if appropriate, the oriented part)
+     * @param gphx graphics object to draw in.
+     * @param game reference to the game that is being played now.
+     */
+    public void draw(Graphics2D gphx, Game game) {
+        boolean show = this.isShown(game);
 
         if(show && !disabled)
         {
@@ -817,13 +845,7 @@ public abstract class VGDLSprite {
     public void _draw(Graphics2D gphx, Game game, Rectangle r)
     {
 
-        if(shrinkfactor != 1)
-        {
-            r.width *= shrinkfactor;
-            r.height *= shrinkfactor;
-            r.x += (rect.width-r.width)/2;
-            r.y += (rect.height-r.height)/2;
-        }
+        this.modifyToDrawRectangle(game, r);
 
         gphx.setColor(color);
 
@@ -841,26 +863,29 @@ public abstract class VGDLSprite {
     }
 
     /**
+     * Calculate a draw rectangle because we use manual transformation
+     * @param game Some game
+     * @param r Input rectangle that is also output rectangle
+     */
+    public void modifyToDrawRectangle(Game game, Rectangle r) {
+        if (shrinkfactor != 1) {
+            r.width *= shrinkfactor;
+            r.height *= shrinkfactor;
+            r.x += (rect.width-r.width)/2;
+            r.y += (rect.height-r.height)/2;
+        }
+    }
+
+    /**
      * Draws the not-oriented part of the sprite, as an image. this.image must be not null.
      * @param gphx graphics object to draw in.
      * @param game reference to the game that is being played now.
      */
     public void _drawImage(Graphics2D gphx, Game game, Rectangle r)
     {
-        if(shrinkfactor != 1)
-        {
-            r.width *= shrinkfactor;
-            r.height *= shrinkfactor;
-            r.x += (rect.width-r.width)/2;
-            r.y += (rect.height-r.height)/2;
-        }
+        this.modifyToDrawRectangle(game, r);
 
-        int w = image.getWidth(null);
-        int h = image.getHeight(null);
-        float scaleX = (float)r.width/w;
-        float scaleY = (float)r.height/h;
-
-        gphx.drawImage(image, r.x, r.y, (int) (w*scaleX), (int) (h*scaleY), null);
+        gphx.drawImage(image, r.x, r.y, r.width, r.height, null);
 
         //uncomment this to see lots of numbers around
         //gphx.setColor(Color.BLACK);

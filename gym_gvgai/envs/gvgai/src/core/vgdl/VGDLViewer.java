@@ -74,6 +74,60 @@ public class VGDLViewer extends JComponent
         paintWithGraphics(g);
     }
 
+    /**
+     * Segmentation colors
+     */
+    private static final Color[] SEGMENTATION_COLORS = {
+            Color.RED,
+            Color.BLUE,
+            Color.GREEN,
+            Color.PINK,
+            Color.WHITE,
+            Color.YELLOW,
+            Color.ORANGE,
+            Color.MAGENTA,
+            Color.LIGHT_GRAY,
+            Color.CYAN,
+            Color.DARK_GRAY
+    };
+
+    /**
+     * Draw an RGB segmentation image
+     * @param g Graphics Object
+     */
+    public void paintSegmentationWithGraphics(Graphics2D g) {
+        // For a better graphics, enable this: (be aware this could bring performance issues depending on your HW & OS).
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        // Black is unmapped
+        g.setColor(Types.BLACK);
+        g.fillRect(0, 0, size.width, size.height);
+
+        try {
+            int[] gameSpriteOrder = game.getSpriteOrder();
+            if (this.spriteGroups != null) {
+                for (Integer spriteTypeInt : gameSpriteOrder) {
+
+                    // Set graphics color here, wrap to not overrun but actually bad?
+                    Color c = SEGMENTATION_COLORS[spriteTypeInt % SEGMENTATION_COLORS.length];
+                    g.setColor(c);
+
+                    if (spriteGroups[spriteTypeInt] != null) {
+                        ArrayList<VGDLSprite> spritesList = spriteGroups[spriteTypeInt].getSprites();
+                        for (VGDLSprite sp : spritesList) {
+                            if (sp != null) sp.drawSegmentation(g, game);
+                        }
+
+                    }
+                }
+            }
+        } catch(Exception e) {
+            // Best practice
+        }
+
+        // Ignore player drawing
+    }
+
     public void paintWithGraphics(Graphics2D g) {
         //For a better graphics, enable this: (be aware this could bring performance issues depending on your HW & OS).
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -121,6 +175,7 @@ public class VGDLViewer extends JComponent
             if (ssoType == Types.LEARNING_SSO_TYPE.IMAGE ||
                 ssoType == Types.LEARNING_SSO_TYPE.BOTH) {
                 saveImage(CompetitionParameters.SCREENSHOT_FILENAME);
+                saveSegmentationImage(CompetitionParameters.SEGMENTATION_FILENAME);
             }
         }
     }
@@ -146,6 +201,27 @@ public class VGDLViewer extends JComponent
         } catch (IOException ie) {
             ie.printStackTrace();
         }
+    }
 
+    /**
+     * Save the segmentation image
+     * @param fileName File name of image
+     */
+    public void saveSegmentationImage(String fileName) {
+        try {
+            BufferedImage bi = new BufferedImage( (int) size.getWidth(), (int) size.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            Graphics2D graphics = bi.createGraphics();
+            this.paintSegmentationWithGraphics(graphics);
+            File file = new File(fileName);
+
+            // Why not always dispose? What is graphics object used for?
+            if (justImage) {
+                graphics.dispose();
+            }
+
+            ImageIO.write(bi, "png", file);
+        } catch (IOException ie) {
+            ie.printStackTrace();
+        }
     }
 }

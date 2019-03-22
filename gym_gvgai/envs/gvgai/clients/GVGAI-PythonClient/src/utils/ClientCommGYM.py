@@ -95,6 +95,10 @@ class ClientCommGYM:
         
         if self.sso.isGameOver==True or self.sso.gameWinner=='PLAYER_WINS' or self.sso.phase == "FINISH" or self.sso.phase=="ABORT" or self.sso.phase=="End":
             self.sso.image = misc.imread(os.path.join(self.tempDir.name, 'gameStateByBytes.png'))
+            try:
+                self.seg_img = misc.imread(os.path.join(self.tempDir.name, 'gameStateSegmentation.png'))
+            except:
+                self.seg_img = None
             self.sso.Terminal=True
             #self.lastScore=0
             #Score = self.lastScore
@@ -102,9 +106,8 @@ class ClientCommGYM:
         else:
             self.sso.Terminal=False
             actions=self.actions()
-        
-      
-        info = {'winner': self.sso.gameWinner, 'actions': self.actions()}  
+
+        info = {'winner': self.sso.gameWinner, 'actions': self.actions(), 'segmentation': self.seg_img}
         return self.sso.image, score, self.sso.Terminal, info
 
     def reset(self, lvl):
@@ -303,6 +306,10 @@ class ClientCommGYM:
                     if(self.sso.imageArray):
                         self.sso.convertBytesToPng(self.sso.imageArray, self.tempDir.name)
                         self.sso.image = misc.imread(os.path.join(self.tempDir.name, 'gameStateByBytes.png'))
+                        try:
+                            self.seg_img = misc.imread(os.path.join(self.tempDir.name, 'gameStateSegmentation.png'))
+                        except:
+                            self.seg_img = None
 
         except Exception as e:
             logging.exception(e)

@@ -110,6 +110,11 @@ public class CompetitionParameters
     public static String SCREENSHOT_FILENAME = "gameStateByBytes.png";
 
     /**
+     * Path to the temporary game screenshot.
+     */
+    public static String SEGMENTATION_FILENAME = "gameStateSegmentation.png";
+
+    /**
      * Delay for human play.
      */
     public static int DELAY = 15;
