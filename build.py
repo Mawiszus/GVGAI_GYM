@@ -36,7 +36,7 @@ def main(dir):
 			#Build Java files
 			src_path = os.path.join(dir, "src")
 			source = get_src(src_path)
-			subprocess.run(["javac", "-d", path] + source, check=True)
+			subprocess.check_output(["javac", "-d", path] + source, stderr=subprocess.STDOUT)
 
 			#Save hash of build in directory
 			hash = check_build.dirHash(src_path)
@@ -48,6 +48,7 @@ def main(dir):
 		except subprocess.CalledProcessError as e:
 			print("Failed to build java source code. Make sure you have Java JDK installed (> 7) and javac works.")
 			print("This build process has not been tested on Windows. Feel free to contribute fixes to the build.py file to get this working on Windows.")
+			print(e.output.decode('utf-8'))
 			raise e
 	else:
 		raise Exception("Command 'javac' is not found. Can't compile source code. May need to install Java JDK or fix path variables.")
