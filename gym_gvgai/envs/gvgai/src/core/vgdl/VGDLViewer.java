@@ -91,6 +91,45 @@ public class VGDLViewer extends JComponent
             Color.DARK_GRAY
     };
 
+    public void paintSegmentationWithBuffer2D(ByteBuffer2D buffer2D) {
+        // Class 0 is unmapped
+        buffer2D.fill(0, 0, buffer2D.getWidth(), buffer2D.getHeight(), (byte) 0);
+
+        try {
+            int[] gameSpriteOrder = game.getSpriteOrder();
+            if (this.spriteGroups != null) {
+                for (Integer spriteTypeInt : gameSpriteOrder) {
+
+                    byte val = (byte)(spriteTypeInt + 1);
+
+                    if (spriteGroups[spriteTypeInt] != null) {
+                        ArrayList<VGDLSprite> spritesList = spriteGroups[spriteTypeInt].getSprites();
+                        for (VGDLSprite sp : spritesList) {
+                            if (sp != null) sp.drawSegmentationBuffer(buffer2D, game, val);
+                        }
+
+                    }
+                }
+            }
+        } catch(Exception e) {
+            // Best practice
+        }
+
+        // Ignore player drawing
+    }
+
+    public int getSegmentationClassCount() {
+        int max = 0;
+
+        for (Integer i : game.getSpriteOrder()) {
+            if (i > max) {
+                max = i;
+            }
+        }
+
+        return max + 1;
+    }
+
     /**
      * Draw an RGB segmentation image
      * @param g Graphics Object
@@ -201,6 +240,12 @@ public class VGDLViewer extends JComponent
         } catch (IOException ie) {
             ie.printStackTrace();
         }
+    }
+
+    public void saveSegmentationBufferFile(String fileName) {
+        ByteBuffer2D buffer2D = new ByteBuffer2D((int) size.getWidth(), (int) size.getHeight());
+        this.paintSegmentationWithBuffer2D(buffer2D);
+        PGM.writeFile(fileName, buffer2D, getSegmentationClassCount());
     }
 
     /**

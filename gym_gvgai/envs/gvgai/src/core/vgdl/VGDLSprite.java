@@ -25,6 +25,7 @@ import ontology.Types;
 import ontology.physics.ContinuousPhysics;
 import ontology.physics.GridPhysics;
 import ontology.physics.Physics;
+import org.w3c.dom.css.Rect;
 import tools.Direction;
 import tools.Utils;
 import tools.Vector2d;
@@ -705,6 +706,22 @@ public abstract class VGDLSprite {
 
         return show;
     }
+
+    /**
+     * Draw a segmentation rectangle to buffer for this sprite
+     */
+    public void drawSegmentationBuffer(ByteBuffer2D buffer2D, Game game, byte classIndex) {
+        boolean show = this.isShown(game);
+
+        if (show && !disabled) {
+            Rectangle r = new Rectangle(rect);
+
+            this.modifyToDrawRectangle(game, r);
+
+            buffer2D.fill(r.x, r.y, r.width, r.height, classIndex);
+        }
+    }
+
 
     /**
      * Draw a segmentation rectangle for this sprite on the given graphics object.
