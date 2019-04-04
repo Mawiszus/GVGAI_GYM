@@ -113,6 +113,8 @@ public class CompetitionParameters
      * Path to the temporary game screenshot.
      */
     public static String SEGMENTATION_FILENAME = "gameStateSegmentation.png";
+    
+    public static String SEGMENTATION_BUFFER_FILENAME = "gameStateSegmentation.p0";
 
     /**
      * Delay for human play.

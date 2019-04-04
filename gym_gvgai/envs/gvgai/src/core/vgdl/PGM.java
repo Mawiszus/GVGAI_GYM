@@ -12,9 +12,9 @@ public class PGM {
 
             Charset ASCII = StandardCharsets.US_ASCII;
 
-            s.write("P5".getBytes(ASCII));
-            s.write(String.format(Locale.ROOT, "%s %s\n", buffer.getWidth(), buffer.getHeight()).getBytes(ASCII));
+            s.write("P5\n".getBytes(ASCII));
             s.write(String.format(Locale.ROOT, "# Classes %d\n", numClasses).getBytes(ASCII));
+            s.write(String.format(Locale.ROOT, "%d %d\n", buffer.getWidth(), buffer.getHeight()).getBytes(ASCII));
             s.write(buffer.getBytes());
 
         } catch (IOException e) {

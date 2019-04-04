@@ -215,6 +215,7 @@ public class VGDLViewer extends JComponent
                 ssoType == Types.LEARNING_SSO_TYPE.BOTH) {
                 saveImage(CompetitionParameters.SCREENSHOT_FILENAME);
                 saveSegmentationImage(CompetitionParameters.SEGMENTATION_FILENAME);
+                saveSegmentationBufferFile(CompetitionParameters.SEGMENTATION_BUFFER_FILENAME);
             }
         }
     }

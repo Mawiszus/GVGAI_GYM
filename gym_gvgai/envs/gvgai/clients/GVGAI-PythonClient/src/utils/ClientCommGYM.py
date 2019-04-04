@@ -96,7 +96,7 @@ class ClientCommGYM:
         if self.sso.isGameOver==True or self.sso.gameWinner=='PLAYER_WINS' or self.sso.phase == "FINISH" or self.sso.phase=="ABORT" or self.sso.phase=="End":
             self.sso.image = misc.imread(os.path.join(self.tempDir.name, 'gameStateByBytes.png'))
             try:
-                with open(os.path.join(self.tempDir.name, 'gameStateSegmentation.png')) as file:
+                with open(os.path.join(self.tempDir.name, 'gameStateSegmentation.p0'), 'rb') as file:
                     self.seg_data = file.read()
             except:
                 self.seg_data = None
@@ -308,7 +308,7 @@ class ClientCommGYM:
                         self.sso.convertBytesToPng(self.sso.imageArray, self.tempDir.name)
                         self.sso.image = misc.imread(os.path.join(self.tempDir.name, 'gameStateByBytes.png'))
                         try:
-                            with open(os.path.join(self.tempDir.name, 'gameStateSegmentation.png')) as file:
+                            with open(os.path.join(self.tempDir.name, 'gameStateSegmentation.p0'), 'rb') as file:
                                 self.seg_data = file.read()
                         except:
                             self.seg_data = None
