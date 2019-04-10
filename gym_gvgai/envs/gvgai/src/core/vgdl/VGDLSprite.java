@@ -710,7 +710,7 @@ public abstract class VGDLSprite {
     /**
      * Draw a segmentation rectangle to buffer for this sprite
      */
-    public void drawSegmentationBuffer(ByteBuffer2D buffer2D, Game game, byte classIndex) {
+    public void drawSegmentationBuffer(ByteBuffer2D buffer2D, Game game, byte classIndex, byte orientClassIndex) {
         boolean show = this.isShown(game);
 
         if (show && !disabled) {
@@ -719,6 +719,16 @@ public abstract class VGDLSprite {
             this.modifyToDrawRectangle(game, r);
 
             buffer2D.fill(r.x, r.y, r.width, r.height, classIndex);
+            
+            if (is_avatar && is_oriented) {
+                // Draw orientation
+                Polygon p = Utils.triPoints(r, orientation);
+                
+                Rectangle bounds = p.getBounds();
+                
+                // Comment this line to not draw orientation
+                buffer2D.fill(bounds.x, bounds.y, bounds.width, bounds.height, orientClassIndex);
+            }
         }
     }
 

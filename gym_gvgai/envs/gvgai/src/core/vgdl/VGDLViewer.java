@@ -92,20 +92,23 @@ public class VGDLViewer extends JComponent
     };
 
     public void paintSegmentationWithBuffer2D(ByteBuffer2D buffer2D) {
-        // Class 0 is unmapped
+        // Class 0 is unmapped, Class len is reserved for orientation
         buffer2D.fill(0, 0, buffer2D.getWidth(), buffer2D.getHeight(), (byte) 0);
 
         try {
             int[] gameSpriteOrder = game.getSpriteOrder();
+            
+            byte orientVal = (byte) 1;
+            
             if (this.spriteGroups != null) {
                 for (Integer spriteTypeInt : gameSpriteOrder) {
 
-                    byte val = (byte)(spriteTypeInt + 1);
+                    byte val = (byte)(spriteTypeInt + 2);
 
                     if (spriteGroups[spriteTypeInt] != null) {
                         ArrayList<VGDLSprite> spritesList = spriteGroups[spriteTypeInt].getSprites();
                         for (VGDLSprite sp : spritesList) {
-                            if (sp != null) sp.drawSegmentationBuffer(buffer2D, game, val);
+                            if (sp != null) sp.drawSegmentationBuffer(buffer2D, game, val, orientVal);
                         }
 
                     }
@@ -127,7 +130,8 @@ public class VGDLViewer extends JComponent
             }
         }
 
-        return max + 1;
+        // 0 unmapped, 1 directional, rest sprites
+        return max + 2;
     }
 
     /**
