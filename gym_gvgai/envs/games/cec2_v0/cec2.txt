@@ -4,7 +4,7 @@ BasicGame key_handler=Pulse square_size=40
         lightoff > Passive img=oryx/cspell1
         lighton > Passive img=oryx/cspell2
         avatar  > ShootAvatar stype=staff img=oryx/necromancer1
-        staff > Flicker limit=1 img=oryx/staff2 shrinkfactor=0.8 singleton=True
+        staff > Flicker limit=-1 img=oryx/staff2 shrinkfactor=0.8 singleton=True
         wall > Immovable img=oryx/wall3 autotiling=True
 
         ok > Immovable invisible=True hidden=True
@@ -34,8 +34,8 @@ BasicGame key_handler=Pulse square_size=40
 
         lighton staff > transformTo stype=to_off
         lightoff staff > transformTo stype=to_on
-        ok staff > transformTo stype=to_nook
-        nook staff > transformTo stype=to_ok
+        ok staff > transformTo stype=to_nook scoreChange=-42
+        nook staff > transformTo stype=to_ok scoreChange=42
 
         avatar TIME > transformToAll stype=to_off stypeTo=lightoff timer=1 repeating=True
         avatar TIME > transformToAll stype=to_on stypeTo=lighton timer=1 repeating=True
