@@ -706,28 +706,35 @@ public abstract class VGDLSprite {
 
         return show;
     }
+    
+    public boolean usesOrientation() {
+        return is_avatar && is_oriented;
+    }
+    
+    private static byte decodeOrientationForSegmentation(Direction orientation) {
+        if (orientation.x() > 0) return 0;
+        else if (orientation.y() < 0) return 1;
+        else if (orientation.x() < 0) return 2;
+        else return 3;
+    }
 
     /**
      * Draw a segmentation rectangle to buffer for this sprite
      */
-    public void drawSegmentationBuffer(ByteBuffer2D buffer2D, Game game, byte classIndex, byte orientClassIndex) {
+    public void drawSegmentationBuffer(ByteBuffer2D buffer2D, Game game, byte classIndex) {
         boolean show = this.isShown(game);
 
         if (show && !disabled) {
             Rectangle r = new Rectangle(rect);
 
             this.modifyToDrawRectangle(game, r);
-
-            buffer2D.fill(r.x, r.y, r.width, r.height, classIndex);
             
-            if (is_avatar && is_oriented) {
+            if (usesOrientation()) {
                 // Draw orientation
-                Polygon p = Utils.triPoints(r, orientation);
-                
-                Rectangle bounds = p.getBounds();
-                
-                // Comment this line to not draw orientation
-                buffer2D.fill(bounds.x, bounds.y, bounds.width, bounds.height, orientClassIndex);
+                byte orientClassIndex = (byte)(classIndex + decodeOrientationForSegmentation(orientation));
+                buffer2D.fill(r.x, r.y, r.width, r.height, orientClassIndex);
+            } else {
+                buffer2D.fill(r.x, r.y, r.width, r.height, classIndex);
             }
         }
     }

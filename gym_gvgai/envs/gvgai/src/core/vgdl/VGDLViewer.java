@@ -91,27 +91,32 @@ public class VGDLViewer extends JComponent
             Color.DARK_GRAY
     };
 
-    public void paintSegmentationWithBuffer2D(ByteBuffer2D buffer2D) {
+    public byte paintSegmentationWithBuffer2D(ByteBuffer2D buffer2D) {
         // Class 0 is unmapped, Class len is reserved for orientation
         buffer2D.fill(0, 0, buffer2D.getWidth(), buffer2D.getHeight(), (byte) 0);
+        
+        byte counter = 1;
 
         try {
             int[] gameSpriteOrder = game.getSpriteOrder();
             
-            byte orientVal = (byte) 1;
-            
             if (this.spriteGroups != null) {
                 for (Integer spriteTypeInt : gameSpriteOrder) {
-
-                    byte val = (byte)(spriteTypeInt + 2);
-
+                    boolean oriented = false;
+                
                     if (spriteGroups[spriteTypeInt] != null) {
                         ArrayList<VGDLSprite> spritesList = spriteGroups[spriteTypeInt].getSprites();
                         for (VGDLSprite sp : spritesList) {
-                            if (sp != null) sp.drawSegmentationBuffer(buffer2D, game, val, orientVal);
+                            if (sp != null) { 
+                                sp.drawSegmentationBuffer(buffer2D, game, counter);
+                                if (sp.usesOrientation()) {
+                                    oriented = true;                                
+                                }
+                            }
                         }
-
                     }
+                    
+                    counter += oriented ? 4 : 1;
                 }
             }
         } catch(Exception e) {
@@ -119,19 +124,9 @@ public class VGDLViewer extends JComponent
         }
 
         // Ignore player drawing
-    }
-
-    public int getSegmentationClassCount() {
-        int max = 0;
-
-        for (Integer i : game.getSpriteOrder()) {
-            if (i > max) {
-                max = i;
-            }
-        }
-
-        // 0 unmapped, 1 directional, rest sprites
-        return max + 2;
+        
+        // Return number of classes
+        return counter;
     }
 
     /**
@@ -249,8 +244,8 @@ public class VGDLViewer extends JComponent
 
     public void saveSegmentationBufferFile(String fileName) {
         ByteBuffer2D buffer2D = new ByteBuffer2D((int) size.getWidth(), (int) size.getHeight());
-        this.paintSegmentationWithBuffer2D(buffer2D);
-        PGM.writeFile(fileName, buffer2D, getSegmentationClassCount());
+        byte counter = this.paintSegmentationWithBuffer2D(buffer2D);
+        PGM.writeFile(fileName, buffer2D, counter);
     }
 
     /**
