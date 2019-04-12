@@ -4,7 +4,7 @@ BasicGame key_handler=Pulse square_size=40
         lightoff > Passive img=oryx/cspell1
         lighton > Passive img=oryx/cspell2
         avatar  > ShootAvatar stype=staff img=oryx/necromancer1
-        staff > Flicker limit=-1 img=oryx/staff2 shrinkfactor=0.8 singleton=True
+        staff > Flicker limit=1 img=oryx/staff2 shrinkfactor=0.8 singleton=True
         wall > Immovable img=oryx/wall3 autotiling=True
 
         ok > Immovable invisible=True hidden=True
@@ -14,7 +14,11 @@ BasicGame key_handler=Pulse square_size=40
             to_off >
             to_on >
             to_ok >
+            to_ok2 >
+            to_ok3 >
             to_nook >
+            to_nook2 >
+            to_nook3 >
 
     LevelMapping
         0 > lightoff floor
@@ -34,13 +38,21 @@ BasicGame key_handler=Pulse square_size=40
 
         lighton staff > transformTo stype=to_off
         lightoff staff > transformTo stype=to_on
-        ok staff > transformTo stype=to_nook scoreChange=-42
-        nook staff > transformTo stype=to_ok scoreChange=42
+        # Give reward on transition, must prevent multiple transitions due too long flicker later
+        ok staff > transformTo stype=to_nook scoreChange=-1
+        nook staff > transformTo stype=to_ok scoreChange=1
+        
+        # Ingeniously programmed delay routine to prevent toggling because despite limit=1 the staff flickers too long
+        to_ok3 floor > transformTo stype=ok
+        to_ok2 floor > transformTo stype=to_ok3
+        to_ok floor > transformTo stype=to_ok2
+        to_nook3 floor > transformTo stype=nook
+        to_nook2 floor > transformTo stype=to_nook3
+        to_nook floor > transformTo stype=to_nook2
 
         avatar TIME > transformToAll stype=to_off stypeTo=lightoff timer=1 repeating=True
         avatar TIME > transformToAll stype=to_on stypeTo=lighton timer=1 repeating=True
-        avatar TIME > transformToAll stype=to_ok stypeTo=ok timer=1 repeating=True
-        avatar TIME > transformToAll stype=to_nook stypeTo=nook timer=1 repeating=True
+        
 
     TerminationSet
         MultiSpriteCounter stype1=nook stype2=to_ok limit=0 win=True
